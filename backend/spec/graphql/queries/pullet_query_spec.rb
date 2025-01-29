@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe 'GraphQL Queries', type: :request do
   let!(:pullets) { create_list(:pullet, 3) }
 
-  xit 'fetches all pullets' do
+  it 'fetches all pullets' do
     query = <<~GQL
       {
         pullets {
