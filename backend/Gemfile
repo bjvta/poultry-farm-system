@@ -46,3 +46,4 @@ group :development do
 end
 
 gem 'graphql', '~> 2.0'
+gem "propshaft", "~> 1.1"
