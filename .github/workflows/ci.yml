@@ -1,0 +1,44 @@
+name: CI - Rails Backend
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          bundle install
+
+      - name: Set up MongoDB configuration
+        run: |
+          cp backend/config/mongoid.yml backend/config/mongoid.yml.ci
+
+      - name: Run RSpec tests
+        run: |
+          cd backend
+          bundle exec rspec
