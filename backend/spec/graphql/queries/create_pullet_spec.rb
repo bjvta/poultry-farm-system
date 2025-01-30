@@ -1,14 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe 'GraphQL Mutations', type: :request do
-  xit 'creates a new pullet' do
+  it 'creates a new pullet' do
     query = <<~GQL
-      mutation {
+      mutation($entryDate: ISO8601Date!, $ageInDays: Int!, $quantity: Int!, $averageWeight: Float){
         createPullet(input: {
-          entryDate: "2025-01-30",
-          ageInDays: 50,
-          quantity: 100,
-          averageWeight: 1.5
+          entryDate: $entryDate,
+          ageInDays: $ageInDays,
+          quantity: $quantity,
+          averageWeight: $averageWeight
         }) {
           id
           entryDate
@@ -18,12 +18,17 @@ RSpec.describe 'GraphQL Mutations', type: :request do
       }
     GQL
 
-    post '/graphql', params: { query: query }
+    result = BackendSchema.execute(query, 
+                                   variables: { 
+                                    entryDate: "2025-01-30", 
+                                    ageInDays: 50,
+                                    quantity: 100,
+                                    averageWeight: 1.5
+                                  })
     
-    json = JSON.parse(response.body)
-    data = json['data']['createPullet']
-
-    expect(response).to have_http_status(:ok)
-    expect(data['quantity']).to eq(100)
+    pullet = result.dig('data', 'createPullet')
+    # TODO: missing the errors
+    
+    expect(pullet['quantity']).to eq(100)
   end
 end
